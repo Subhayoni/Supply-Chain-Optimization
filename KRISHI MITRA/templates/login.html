@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login Page</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Login</h2>
+    <form onsubmit="return validateCaptcha()" method="post">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required />
+
+      <div class="captcha-section">
+        <label>Captcha</label>
+        <div class="captcha-box" style="display: flex; align-items: center; gap: 10px;">
+          <canvas id="captchaCanvas" width="120" height="40" style="border: 1px solid #ccc; background-color: #f9f9f9;"></canvas>
+          <button type="button" onclick="generateCaptcha()" title="Refresh" style="padding: 4px 8px;">↻</button>
+        </div>
+        <input type="text" id="captcha" name="captcha" placeholder="Enter captcha" required />
+      </div>
+
+      <div class="radio-group">
+        <p><label><input type="radio" name="role" value="Farmer" required> Farmer</label>
+        <label><input type="radio" name="role" value="Shelter Owner"> Shelter Owner</label></p>
+        <p><label><input type="radio" name="role" value="Shopkeeper"> Shopkeeper</label>
+        <label><input type="radio" name="role" value="Customer"> Customer</label></p>
+      </div>
+
+      <button type="submit">Login</button>
+
+      <p class="signup-link">Don't have an account?
+        <a href="{{ url_for('signup') }}">Sign up here</a>
+      </p>
+    </form>
+  </div>
+
+  <script src="{{ url_for('static', filename='captcha.js') }}"></script>
+</body>
+</html>
+
