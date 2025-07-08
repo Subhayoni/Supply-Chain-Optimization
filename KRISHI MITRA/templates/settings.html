@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Krishi Mitra - Settings</title>
+  
+  <!-- Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f9f5f0; /* Light creamy background */
+      transition: 0.5s;
+    }
+    .sidebar {
+      background-color: #ffffff;
+      height: 100vh;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      transition: 0.5s;
+    }
+    .sidebar a {
+      display: block;
+      padding: 15px 20px;
+      color: #333;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .sidebar a:hover {
+      background-color: #f1f1f1;
+      color: #000;
+    }
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background-color: #fff;
+      transition: 0.5s;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border: none;
+    }
+    .btn-danger:hover {
+      background-color: #b30000;
+    }
+    /* Dark Mode Full Coverage */
+    body.dark-mode {
+      background-color: #121212 !important;
+      color: #f1f1f1 !important;
+    }
+    body.dark-mode .sidebar {
+      background-color: #1e1e1e !important;
+    }
+    body.dark-mode .sidebar a {
+      color: #ddd !important;
+    }
+    body.dark-mode .sidebar a:hover {
+      background-color: #333 !important;
+      color: #fff !important;
+    }
+    body.dark-mode .card {
+      background-color: #1f1f1f !important;
+      color: #ddd !important;
+      box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+    <div class="col-md-2 sidebar d-flex flex-column justify-content-start p-0">
+      <h4 class="text-center py-3">Krishi Mitra</h4>
+      <a href="index.html">🏠 Dashboard</a>
+      <a href="mycrops.html">🌾 My Crops</a>
+      <a href="mysales.html">💰 My Sales</a>   
+      <a href="settings.html" class="bg-light">⚙️ Settings</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-10 p-4">
+      <h2 class="mb-4 text-center">Settings</h2>
+
+      <!-- Dark Mode -->
+      <div class="card p-4 mb-4">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="darkModeToggle">
+          <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="card p-4 mb-4">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="notificationToggle" checked>
+          <label class="form-check-label" for="notificationToggle">Notifications</label>
+        </div>
+      </div>
+
+      <!-- Device Permissions -->
+      <div class="card p-4 mb-4">
+        <p><strong>Device Permissions:</strong></p>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item bg-transparent">Camera: <span class="text-success">Allowed</span></li>
+          <li class="list-group-item bg-transparent">Location: <span class="text-warning">Ask Every Time</span></li>
+          <li class="list-group-item bg-transparent">Microphone: <span class="text-danger">Blocked</span></li>
+        </ul>
+      </div>
+
+      <!-- Delete Account Centered -->
+      <div class="card p-4 mb-4 d-flex justify-content-center align-items-center">
+        <button class="btn btn-danger w-50" onclick="confirmDelete()">Delete Account</button>
+      </div>
+
+      <!-- Back Button Centered -->
+      <div class="text-center">
+        <a href="index.html" class="btn btn-secondary">← Back to Dashboard</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- JS Scripts -->
+<script>
+  // Dark Mode Toggle (Full Page)
+  document.getElementById('darkModeToggle').addEventListener('change', function () {
+    document.body.classList.toggle('dark-mode');
+  });
+
+  // Notification Toggle Example
+  document.getElementById('notificationToggle').addEventListener('change', function () {
+    alert(this.checked ? 'Notifications turned ON' : 'Notifications turned OFF');
+  });
+
+  // Confirm Delete
+  function confirmDelete() {
+    if (confirm("Are you sure you want to delete your account? This cannot be undone.")) {
+      alert("Account deleted.");
+      // Redirect or delete logic here
+    }
+  }
+</script>
+
+</body>
+</html>

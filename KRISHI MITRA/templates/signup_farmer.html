@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Farmer Sign Up</title>
 
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-  <!-- Font Awesome for optional icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <style>
     body {
@@ -39,56 +37,16 @@
       text-align: center;
       font-weight: bold;
     }
-
-    .crop-checkboxes label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .form-check-label a {
-      color: #007bff;
-      text-decoration: none;
-    }
-
-    .form-check-label a:hover {
-      text-decoration: underline;
-    }
-
-    .btn-primary {
-      white-space: nowrap;
-    }
   </style>
 </head>
 <body>
 
-  <div class="form-box">
-    <h2><i class="fas fa-tractor"></i> Farmer Sign Up</h2>
-
-    <form method="POST" action="{{ url_for('signup_farmer') }}">
-      <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" name="username" class="form-control" id="username" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" name="password" class="form-control" id="password" required />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Location</label>
-        <div class="d-flex gap-2">
-          <input type="text" name="state" class="form-control" placeholder="State" required />
-          <input type="text" name="district" class="form-control" placeholder="District" required />
-        </div>
-      </div>
-
-      <!-- Flash Message Display -->
-       <!-- Flash Message Display -->
-{% with messages = get_flashed_messages(with_categories=true) %}
+<div class="form-box">
+  <h2><i class="fas fa-tractor"></i> Farmer Sign Up</h2>
+  {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     {% for category, message in messages %}
-      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+      <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
         {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
@@ -96,66 +54,78 @@
   {% endif %}
 {% endwith %}
 
-<!-- Phone and Send OTP -->
-<div class="mb-3">
-  <label for="phone" class="form-label">Phone Number</label>
-  <form method="POST" action="{{ url_for('send_otp') }}" class="d-flex gap-2">
-    <input type="tel" class="form-control" name="phone" placeholder="Enter phone number" required />
-    <button class="btn btn-primary" type="submit">Send OTP</button>
+
+  <form method="POST" action="{{ url_for('signup_farmer') }}">
+    
+
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" name="username" class="form-control" id="username" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" name="password" class="form-control" id="password" required />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Location</label>
+      <div class="d-flex gap-2">
+        <input type="text" name="state" class="form-control" placeholder="State" required />
+        <input type="text" name="district" class="form-control" placeholder="District" required />
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="phone" class="form-label">Phone Number</label>
+      <input type="text" name="phone" class="form-control" id="phone" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="aadhar" class="form-label">Aadhar Number</label>
+      <input type="text" name="aadhar" class="form-control" id="aadhar" maxlength="12" required />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Types of Crops Grown</label>
+      {% for crop in ['Wheat', 'Rice', 'Pulses', 'Vegetables', 'Fruits', 'Sugarcane', 'Tea', 'Other'] %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="crop" value="{{ crop }}" id="{{ crop }}">
+          <label class="form-check-label" for="{{ crop }}">{{ crop }}</label>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="mb-3">
+      <label for="language" class="form-label">Preferred Language</label>
+      <select name="language" id="language" class="form-select" required>
+        <option value="">Select Language</option>
+        <option>Hindi</option>
+        <option>Bengali</option>
+        <option>English</option>
+        <option>Odia</option>
+        <option>Marathi</option>
+        <option>Telugu</option>
+        <option>Gujarati</option>
+        <option>Tamil</option>
+      </select>
+    </div>
+
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="agreeTerms" required />
+      <label class="form-check-label" for="agreeTerms">
+        I agree to the <a href="#">terms and conditions</a>.
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Sign Up</button>
+    <p class="mt-3 text-center">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
   </form>
 </div>
 
-      <div class="mb-3">
-        <label for="otp" class="form-label">Enter OTP</label>
-        <input type="text" name="otp" class="form-control" id="otp" placeholder="Enter the OTP received" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="aadhar" class="form-label">Aadhar Number</label>
-        <input type="text" name="aadhar" class="form-control" id="aadhar" maxlength="12" placeholder="Enter Aadhar (12-digit)" required />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Types of Crops Grown</label>
-        <div class="crop-checkboxes">
-          <div class="form-check"><input class="form-check-input" type="checkbox" name="crop" value="Wheat" id="wheat"><label class="form-check-label" for="wheat">Wheat</label></div>
-          <div class="form-check"><input class="form-check-input" type="checkbox" name="crop" value="Rice" id="rice"><label class="form-check-label" for="rice">Rice</label></div>
-          <div class="form-check"><input class="form-check-input" type="checkbox" name="crop" value="Pulses" id="pulses"><label class="form-check-label" for="pulses">Pulses</label></div>
-          <div class="form-check"><input class="form-check-input" type="checkbox" name="crop" value="Vegetables" id="vegetables"><label class="form-check-label" for="vegetables">Vegetables</label></div>
-          <div class="form-check"><input class="form-check-input" type="checkbox" name="crop" value="Fruits" id="fruits"><label class="form-check-label" for="fruits">Fruits</label></div>
-          <div class="form-check"><input class="form-check-input" type="checkbox" name="crop" value="Sugarcane" id="sugarcane"><label class="form-check-label" for="sugarcane">Sugarcane</label></div>
-          <div class="form-check"><input class="form-check-input" type="checkbox" name="crop" value="Tea" id="tea"><label class="form-check-label" for="tea">Tea</label></div>
-          <div class="form-check"><input class="form-check-input" type="checkbox" name="crop" value="Other" id="other"><label class="form-check-label" for="other">Other</label></div>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label for="language" class="form-label">Preferred Language</label>
-        <select name="language" id="language" class="form-select" required>
-          <option value="">Select Language</option>
-          <option>Hindi</option>
-          <option>Bengali</option>
-          <option>English</option>
-          <option>Odia</option>
-          <option>Marathi</option>
-          <option>Telugu</option>
-          <option>Gujarati</option>
-          <option>Tamil</option>
-        </select>
-      </div>
-
-      <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" id="agreeTerms" required />
-        <label class="form-check-label" for="agreeTerms">
-          I agree to the <a href="#">terms and conditions</a>.
-        </label>
-      </div>
-
-      <button type="submit" class="btn btn-success w-100">Sign Up</button>
-      <p class="mt-3 text-center">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
-    </form>
-  </div>
-
 </body>
 </html>
+
+
+
 
