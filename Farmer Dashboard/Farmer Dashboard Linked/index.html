@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Krishi Mitra</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container-fluid h-100 d-flex p-3 gap-3">
+
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column align-items-start p-3 rounded-4 shadow-sm">
+      <h4 class="logo mb-4 text-primary"> <span class="sidebar-text">Krishi Mitra</span></h4>
+    <a href="my_crops.html" class="sidebar-link active"><i class="bi bi-basket2-fill me-2"></i> <span class="sidebar-text">My Crops</span></a>
+
+      <a href="settings.html" class="sidebar-link active"><i class="bi bi-gear-fill me-2"></i> <span class="sidebar-text">Settings</span>
+      </a>
+      <a href="my_sales.html" class=" sidebar-link"><i class="bi bi-graph-up-arrow me-2"></i> <span class="sidebar-text">My Sales</span></a>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- Main + Notifications -->
+    <div class="d-flex flex-grow-1 gap-3">
+
+      <!-- Main Content -->
+      <div class="main-content flex-grow-1 p-4 rounded-4 shadow-sm d-flex flex-column align-items-start">
+        <div class="fs-5 fw-semibold text-dark mb-2">Hello, <span class="text-success">Farmer</span></div>
+
+        <!-- Action Cards -->
+        <div class="action-cards d-flex gap-4 flex-wrap mt-4">
+          <!-- Upload Crop -->
+          <div class="card-box" data-bs-toggle="modal" data-bs-target="#uploadCropModal">
+            <div class="video-box">
+              <img src="upload.jpeg" alt="Upload Crop" class="thumb-img" />
+              <video src="upload.mp4" class="preview-video" muted loop playsinline></video>
+            </div>
+            <div class="card-text">Upload your crop</div>
+          </div>
+
+          <!-- Store Crop -->
+          <a href="store_crops.html" class="card-box text-decoration-none text-dark">
+            <div class="video-box">
+              <img src="store.jpeg" alt="Store Crop" class="thumb-img" />
+              <video src="store.mp4" class="preview-video" muted loop></video>
+            </div>
+            <div class="card-text">Store your crop</div>
+          </a>
+
+
+          <!-- Sell Crop -->
+          <a href="sell_crops.html" class="card-box text-decoration-none text-dark">
+            <div class="video-box">
+              <img src="sell.jpeg" alt="Sell Crop" class="thumb-img" />
+              <video src="sell.mp4" class="preview-video" muted loop></video>
+            </div>
+            <div class="card-text">Sell your crop</div>
+          </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="notif-panel d-flex flex-column gap-3 p-3 rounded-4 shadow-sm">
+        <h5 class="fw-semibold text-dark mb-2"><i class="bi bi-bell-fill me-2 text-warning"></i>Notifications</h5>
+        <div class="notif-card p-3 rounded-3 shadow-sm">
+          <div class="fw-semibold text-dark mb-1">Market Alert</div>
+          <div class="text-muted small">Lorem ipsum dolor sit amet.</div>
+        </div>
+        <div class="notif-card p-3 rounded-3 shadow-sm">
+          <div class="fw-semibold text-dark mb-1">Storage Update</div>
+          <div class="text-muted small">Some storage updated availability.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Upload Crop Modal -->
+  <div class="modal fade" id="uploadCropModal" tabindex="-1" aria-labelledby="uploadCropModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4">
+        <div class="modal-header">
+          <h5 class="modal-title" id="uploadCropModalLabel">New Crop Entry</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+                <label for="cropType" class="form-label">Type of Crop</label>
+                <select class="form-select" id="cropType" required>
+                    <option value="">Select a crop</option>
+                    <option>Wheat</option>
+                    <option>Rice</option>
+                    <option>Pulses</option>
+                    <option>Vegetables</option>
+                    <option>Fruits</option>
+                    <option>Sugarcane</option>
+                    <option>Tea</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="quantity" class="form-label">Quantity (in kg)</label>
+              <input type="number" class="form-control" id="quantity" required>
+            </div>
+            <div class="mb-3">
+              <label for="quality" class="form-label">Quality</label>
+              <select class="form-select" id="quality" required>
+                <option value="">Select Quality</option>
+                <option>High</option>
+                <option>Medium</option>
+                <option>Low</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Action</label><br />
+              <input type="radio" name="action" value="Storage" required> Put in Storage
+              <input type="radio" name="action" value="Market" class="ms-3" required> Put in Market
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary">Save Crop</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Video hover
+    document.querySelectorAll('.card-box').forEach(card => {
+      const video = card.querySelector('video');
+      card.addEventListener('mouseenter', () => { video.currentTime = 0; video.play(); });
+      card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+    });
+
+    // Dummy data
+    const crops = [{ id: 1, name: "Wheat - 500kg" }, { id: 2, name: "Rice - 300kg" }];
+    const storages = [
+      { name: "CoolFarm", location: "Kolkata", price: 2.5, rating: 4.2 },
+      { name: "AgriChill", location: "Howrah", price: 3.1, rating: 4.7 }
+    ];
+    const saleRequests = [
+      { id: 1, buyer: "Retailer A", crop: "Wheat", quantity: 200, price: 25 },
+      { id: 2, buyer: "Customer B", crop: "Rice", quantity: 150, price: 30 }
+    ];
+
+    // Store Crop
+    const cropSelector = document.getElementById("cropSelector");
+    crops.forEach(c => {
+      const opt = document.createElement("option");
+      opt.textContent = c.name;
+      cropSelector.appendChild(opt);
+    });
+
+    const storageTable = document.getElementById("storageTable");
+    storages.forEach(s => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${s.name}</td>
+        <td>${s.location}</td>
+        <td>₹${s.price}</td>
+        <td>${"⭐".repeat(Math.floor(s.rating))} (${s.rating})</td>
+        <td><button class="btn btn-sm btn-success">Select</button></td>`;
+      storageTable.appendChild(row);
+    });
+
+    // Sell Crop
+    const saleTable = document.getElementById("saleRequestTable");
+    saleRequests.forEach(req => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${req.buyer}</td>
+        <td>${req.crop}</td>
+        <td>${req.quantity} kg</td>
+        <td>₹${req.price}</td>
+        <td>
+          <button class="btn btn-sm btn-success me-2" onclick="handleAccept(${req.id})">Accept</button>
+          <button class="btn btn-sm btn-danger" onclick="handleReject(${req.id})">Reject</button>
+        </td>`;
+      saleTable.appendChild(row);
+    });
+
+    function handleAccept(id) {
+      if (confirm("Are you sure you want to accept this request?")) {
+        alert("Request accepted!");
+      }
+    }
+
+    function handleReject(id) {
+      if (confirm("Are you sure you want to reject this request?")) {
+        alert("Request rejected.");
+      }
+    }
+  </script>
+</body>
+</html>
