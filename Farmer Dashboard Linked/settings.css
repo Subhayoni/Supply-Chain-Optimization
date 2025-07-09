@@ -1,0 +1,44 @@
+body {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.settings-card {
+  width: 100%;
+  max-width: 480px;
+ 
+  background-color: #534411;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.dark-mode {
+  background-color: #121212 !important;
+  color: #e0e0e0;
+}
+
+.dark-card {
+  background-color: #1f1f1f !important;
+  border-color: #333 !important;
+  color: #e0e0e0;
+}
+
+.dark-mode .form-select,
+.dark-mode .form-check-label {
+  background-color: #1e1e1e;
+  color: #922929;
+  border-color: #723434;
+}
+
+/* Font Sizes */
+.font-small {
+  font-size: 14px;
+}
+
+.font-medium {
+  font-size: 16px;
+}
+
+.font-large {
+  font-size: 18px;
+}
