@@ -12,7 +12,7 @@ def init_db():
     conn = sqlite3.connect('farmer_data.db')
     c = conn.cursor()
     
-    # Create farmers table with improved schema
+    # Create farmers table (existing)
     c.execute('''
         CREATE TABLE IF NOT EXISTS farmers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,6 +23,54 @@ def init_db():
             phone TEXT NOT NULL UNIQUE,
             aadhar TEXT NOT NULL UNIQUE,
             crops TEXT NOT NULL,
+            language TEXT NOT NULL
+        )
+    ''')
+    
+    # Create shelter_owners table (new)
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS shelter_owners (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            state TEXT NOT NULL,
+            district TEXT NOT NULL,
+            phone TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
+            aadhar TEXT NOT NULL UNIQUE,
+            license TEXT NOT NULL UNIQUE,
+            crops TEXT NOT NULL,
+            capacity INTEGER NOT NULL,
+            language TEXT NOT NULL
+        )
+    ''')
+
+    # Create shopkeepers table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS shopkeepers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            state TEXT NOT NULL,
+            district TEXT NOT NULL,
+            phone TEXT NOT NULL UNIQUE,
+            license_number TEXT NOT NULL UNIQUE,
+            shop_name TEXT NOT NULL,
+            language TEXT NOT NULL
+        )
+    ''')
+
+    # Create customers table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS customers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            full_name TEXT NOT NULL,
+            state TEXT NOT NULL,
+            district TEXT NOT NULL,
+            phone TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
             language TEXT NOT NULL
         )
     ''')
@@ -60,24 +108,46 @@ def login():
             flash("Please fill all required fields.", "error")
             return redirect(url_for('login'))
 
-        if role == "Farmer":
-            conn = sqlite3.connect('farmer_data.db')
-            c = conn.cursor()
-            c.execute("SELECT * FROM farmers WHERE username=?", (username,))
-            farmer = c.fetchone()
-            conn.close()
+        conn = sqlite3.connect('farmer_data.db')
+        c = conn.cursor()
 
-            if farmer and check_password_hash(farmer[2], password):
-                session['user_id'] = farmer[0]
-                session['username'] = farmer[1]
-                session['role'] = role
+        if role == "Farmer":
+            c.execute("SELECT * FROM farmers WHERE username=?", (username,))
+            user = c.fetchone()
+        elif role == "Shelter Owner":
+            c.execute("SELECT * FROM shelter_owners WHERE username=?", (username,))
+            user = c.fetchone()
+        elif role == "Shopkeeper":
+            c.execute("SELECT * FROM shopkeepers WHERE username=?", (username,))
+            user = c.fetchone()
+        elif role == "Customer":
+            c.execute("SELECT * FROM customers WHERE username=?", (username,))
+            user = c.fetchone()
+        else:
+            flash("Invalid role selected.", "error")
+            return redirect(url_for('login'))
+
+        conn.close()
+
+        if user and check_password_hash(user[2], password):
+            session['user_id'] = user[0]
+            session['username'] = user[1]
+            session['role'] = role
+            
+            if role == "Farmer":
                 flash("Login successful!", "success")
                 return redirect(url_for('farmer_dashboard'))
-            else:
-                flash("Invalid username or password.", "error")
-                return redirect(url_for('login'))
+            elif role == "Shelter Owner":
+                flash("Login successful!", "success")
+                return redirect(url_for('shelter_dashboard'))
+            elif role == "Shopkeeper":
+                flash("Login successful!", "success")
+                return redirect(url_for('shopkeeper_dashboard'))
+            elif role == "Customer":
+                flash("Login successful!", "success")
+                return redirect(url_for('customer_dashboard'))
         else:
-            flash("Only Farmer login implemented yet.", "error")
+            flash("Invalid username or password.", "error")
             return redirect(url_for('login'))
     
     return render_template("login.html")
@@ -186,17 +256,267 @@ def logout():
     session.clear()
     flash("You have been logged out.", "info")
     return redirect(url_for('index'))
-@app.route('/signup/shopkeeper')
-def signup_shopkeeper():
-    return render_template("signup_shopkeeper.html")
 
-@app.route('/signup/shelter')
+@app.route('/signup/shelter', methods=['GET', 'POST'])
 def signup_shelter():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        state = request.form.get('state')
+        district = request.form.get('district')
+        phone = request.form.get('phone')
+        email = request.form.get('email')
+        aadhar = request.form.get('aadhar')
+        license_num = request.form.get('license')
+        crops = request.form.getlist('crops')
+        capacity = request.form.get('capacity')
+        language = request.form.get('language')
+
+        # Validate inputs
+        if not all([username, password, state, district, phone, email, aadhar, license_num, crops, capacity, language]):
+            flash("Please fill all required fields.", "error")
+            return redirect(url_for('signup_shelter'))
+
+        if not validate_phone(phone):
+            flash("Invalid phone number. Please enter a valid Indian phone number.", "error")
+            return redirect(url_for('signup_shelter'))
+
+        if not validate_aadhar(aadhar):
+            flash("Invalid Aadhar number. Must be 12 digits.", "error")
+            return redirect(url_for('signup_shelter'))
+
+        if not validate_password(password):
+            flash("Password must be at least 8 characters with at least one letter and one number.", "error")
+            return redirect(url_for('signup_shelter'))
+
+        crop_string = ', '.join(crops)
+
+        try:
+            conn = sqlite3.connect('farmer_data.db')
+            c = conn.cursor()
+            
+            # Check if username, phone, email, aadhar or license already exists
+            for field, value in [('username', username), ('phone', phone), ('email', email), 
+                               ('aadhar', aadhar), ('license', license_num)]:
+                c.execute(f"SELECT {field} FROM shelter_owners WHERE {field}=?", (value,))
+                if c.fetchone():
+                    flash(f"{field.capitalize()} already exists. Please use a different one.", "error")
+                    return redirect(url_for('signup_shelter'))
+
+            # Insert new shelter owner with hashed password
+            hashed_password = generate_password_hash(password)
+            c.execute('''
+                INSERT INTO shelter_owners 
+                (username, password, state, district, phone, email, aadhar, license, crops, capacity, language)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (username, hashed_password, state, district, phone, email, aadhar, license_num, crop_string, capacity, language))
+            
+            conn.commit()
+            conn.close()
+
+            flash("Registration successful! Please login.", "success")
+            return redirect(url_for('login'))
+
+        except sqlite3.Error as e:
+            flash(f"An error occurred: {str(e)}", "error")
+            return redirect(url_for('signup_shelter'))
+
     return render_template("signup_shelter.html")
 
-@app.route('/signup/customer')
+
+@app.route('/shelter/dashboard')
+def shelter_dashboard():
+    if 'username' in session and session.get('role') == 'Shelter Owner':
+        # Get shelter owner details from database
+        conn = sqlite3.connect('farmer_data.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM shelter_owners WHERE id=?", (session['user_id'],))
+        shelter_owner = c.fetchone()
+        conn.close()
+        
+        if shelter_owner:
+            shelter_data = {
+                'username': shelter_owner[1],
+                'state': shelter_owner[3],
+                'district': shelter_owner[4],
+                'phone': shelter_owner[5],
+                'email': shelter_owner[6],
+                'aadhar': shelter_owner[7],
+                'license': shelter_owner[8],
+                'crops': shelter_owner[9].split(', '),
+                'capacity': shelter_owner[10],
+                'language': shelter_owner[11]
+            }
+            return render_template("shelter_dashboard.html", shelter=shelter_data)
+    
+    flash("Please log in as a shelter owner first.", "error")
+    return redirect(url_for('login'))
+
+# Add this new route for shopkeeper signup
+@app.route('/signup/shopkeeper', methods=['GET', 'POST'])
+def signup_shopkeeper():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        state = request.form.get('state')
+        district = request.form.get('district')
+        phone = request.form.get('phone')
+        license_number = request.form.get('license')
+        shop_name = request.form.get('shop_name')
+        language = request.form.get('language')
+
+        # Validate inputs
+        if not all([username, password, state, district, phone, license_number, shop_name, language]):
+            flash("Please fill all required fields.", "error")
+            return redirect(url_for('signup_shopkeeper'))
+
+        if not validate_phone(phone):
+            flash("Invalid phone number. Please enter a valid Indian phone number.", "error")
+            return redirect(url_for('signup_shopkeeper'))
+
+        if not validate_password(password):
+            flash("Password must be at least 8 characters with at least one letter and one number.", "error")
+            return redirect(url_for('signup_shopkeeper'))
+
+        try:
+            conn = sqlite3.connect('farmer_data.db')
+            c = conn.cursor()
+            
+            # Check if username, phone or license already exists
+            for field, value in [('username', username), ('phone', phone), ('license_number', license_number)]:
+                c.execute(f"SELECT {field} FROM shopkeepers WHERE {field}=?", (value,))
+                if c.fetchone():
+                    flash(f"{field.replace('_', ' ').title()} already exists. Please use a different one.", "error")
+                    return redirect(url_for('signup_shopkeeper'))
+
+            # Insert new shopkeeper with hashed password
+            hashed_password = generate_password_hash(password)
+            c.execute('''
+                INSERT INTO shopkeepers 
+                (username, password, state, district, phone, license_number, shop_name, language)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (username, hashed_password, state, district, phone, license_number, shop_name, language))
+            
+            conn.commit()
+            conn.close()
+
+            flash("Shopkeeper registration successful! Please login.", "success")  # Success message
+            return redirect(url_for('login'))  # Redirect to login page
+
+        except sqlite3.Error as e:
+            flash(f"An error occurred: {str(e)}", "error")
+            return redirect(url_for('signup_shopkeeper'))
+
+    return render_template("signup_shopkeeper.html")
+
+@app.route('/shopkeeper/dashboard')
+def shopkeeper_dashboard():
+    if 'username' in session and session.get('role') == 'Shopkeeper':
+        conn = sqlite3.connect('farmer_data.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM shopkeepers WHERE id=?", (session['user_id'],))
+        shopkeeper = c.fetchone()
+        conn.close()
+        
+        if shopkeeper:
+            shopkeeper_data = {
+                'username': shopkeeper[1],
+                'state': shopkeeper[3],
+                'district': shopkeeper[4],
+                'phone': shopkeeper[5],
+                'license_number': shopkeeper[6],
+                'shop_name': shopkeeper[7],
+                'language': shopkeeper[8]
+            }
+            return render_template("shopkeeper_dashboard.html", shopkeeper=shopkeeper_data)
+    
+    flash("Please log in as a shopkeeper first.", "error")
+    return redirect(url_for('login'))
+
+@app.route('/signup/customer', methods=['GET', 'POST'])
 def signup_customer():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        full_name = request.form.get('full_name')
+        state = request.form.get('state')
+        district = request.form.get('district')
+        phone = request.form.get('phone')
+        email = request.form.get('email')
+        language = request.form.get('language')
+
+        # Validate inputs
+        if not all([username, password, full_name, state, district, phone, email, language]):
+            flash("Please fill all required fields.", "error")
+            return redirect(url_for('signup_customer'))
+
+        if not validate_phone(phone):
+            flash("Invalid phone number. Please enter a valid Indian phone number.", "error")
+            return redirect(url_for('signup_customer'))
+
+        if not validate_password(password):
+            flash("Password must be at least 8 characters with at least one letter and one number.", "error")
+            return redirect(url_for('signup_customer'))
+
+        try:
+            conn = sqlite3.connect('farmer_data.db')
+            c = conn.cursor()
+            
+            # Check if username, phone or email already exists
+            for field, value in [('username', username), ('phone', phone), ('email', email)]:
+                c.execute(f"SELECT {field} FROM customers WHERE {field}=?", (value,))
+                if c.fetchone():
+                    flash(f"{field.replace('_', ' ').title()} already exists. Please use a different one.", "error")
+                    return redirect(url_for('signup_customer'))
+
+            # Insert new customer with hashed password
+            hashed_password = generate_password_hash(password)
+            c.execute('''
+                INSERT INTO customers 
+                (username, password, full_name, state, district, phone, email, language)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (username, hashed_password, full_name, state, district, phone, email, language))
+            
+            conn.commit()
+            conn.close()
+
+            flash("Customer registration successful! Please login.", "success")
+            return redirect(url_for('login'))
+
+        except sqlite3.Error as e:
+            flash(f"An error occurred: {str(e)}", "error")
+            return redirect(url_for('signup_customer'))
+
     return render_template("signup_customer.html")
+
+# Customer dashboard route
+@app.route('/customer/dashboard')
+def customer_dashboard():
+    if 'username' in session and session.get('role') == 'Customer':
+        conn = sqlite3.connect('farmer_data.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM customers WHERE id=?", (session['user_id'],))
+        customer = c.fetchone()
+        conn.close()
+        
+        if customer:
+            customer_data = {
+                'username': customer[1],
+                'full_name': customer[3],
+                'state': customer[4],
+                'district': customer[5],
+                'phone': customer[6],
+                'email': customer[7],
+                'language': customer[8]
+            }
+            return render_template("customer_dashboard.html", customer=customer_data)
+    
+    flash("Please log in as a customer first.", "error")
+    return redirect(url_for('login'))
+
+
+
+
 
 if __name__ == '__main__':
     init_db()
