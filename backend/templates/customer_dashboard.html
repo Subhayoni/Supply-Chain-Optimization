@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard - Agricultural Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customer_dash.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex h-100">
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column p-3 h-100">
+        <div class="mb-4">
+            <h3 class="text-center" style="color: #f39c12; font-weight: 700;">
+                <i class="fas fa-user me-2"></i>AgriPlatform
+            </h3>
+        </div>
+        
+        <div class="mb-4">
+            <h5 class="text-center" style="color: #2c3e50;">Welcome, {{ customer[3] }}!</h5>
+            <p class="text-center text-muted small">{{ customer[6] }}, {{ customer[5] }}</p>
+        </div>
+        
+        <nav class="nav flex-column">
+            <a class="sidebar-link" href="{{ url_for('customer_dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('marketplace') }}">
+                <i class="fas fa-shopping-cart me-2"></i>
+                <span class="sidebar-text">Browse Marketplace</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('orders') }}">
+                <i class="fas fa-clipboard-list me-2"></i>
+                <span class="sidebar-text">My Orders</span>
+            </a>
+        </nav>
+        
+        <div class="spacer"></div>
+        
+        <a class="sidebar-link" href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span class="sidebar-text">Logout</span>
+        </a>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-fill main-content p-4">
+        <div class="row">
+            <!-- Quick Actions -->
+            <div class="col-md-8">
+                <h2 class="mb-4" style="color: #2c3e50; font-weight: 700;">Customer Dashboard</h2>
+                
+                <div class="action-cards">
+                    <div class="card-box" onclick="window.location.href='{{ url_for('marketplace') }}'">
+                        <div class="video-box">
+                            <i class="fas fa-shopping-cart fa-5x text-primary" style="margin-top: 50px;"></i>
+                        </div>
+                        <div class="card-text">Browse Fresh Produce</div>
+                    </div>
+                    
+                    <div class="card-box" onclick="window.location.href='{{ url_for('orders') }}'">
+                        <div class="video-box">
+                            <i class="fas fa-clipboard-list fa-5x text-success" style="margin-top: 50px;"></i>
+                        </div>
+                        <div class="card-text">My Orders</div>
+                    </div>
+                    
+                    <div class="card-box" onclick="searchCrops()">
+                        <div class="video-box">
+                            <i class="fas fa-search fa-5x text-warning" style="margin-top: 50px;"></i>
+                        </div>
+                        <div class="card-text">Search Crops</div>
+                    </div>
+                    
+                    <div class="card-box" onclick="showProfile()">
+                        <div class="video-box">
+                            <i class="fas fa-user-circle fa-5x text-info" style="margin-top: 50px;"></i>
+                        </div>
+                        <div class="card-text">My Profile</div>
+                    </div>
+                </div>
+                
+                <!-- Customer Information -->
+                <div class="mt-5">
+                    <h4 class="mb-3" style="color: #2c3e50;">Profile Information</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Personal Details</h6>
+                                    <p class="card-text">
+                                        <strong>Full Name:</strong> {{ customer[3] }}<br>
+                                        <strong>Username:</strong> {{ customer[1] }}<br>
+                                        <strong>Email:</strong> {{ customer[8] }}<br>
+                                        <strong>Phone:</strong> {{ customer[7] }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Account Details</h6>
+                                    <p class="card-text">
+                                        <strong>Location:</strong> {{ customer[6] }}, {{ customer[5] }}<br>
+                                        <strong>Language:</strong> {{ customer[9] }}<br>
+                                        <strong>Total Orders:</strong> {{ recent_orders|length }}<br>
+                                        <strong>Account Status:</strong> <span class="badge bg-success">Active</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Orders -->
+                <div class="mt-5">
+                    <h4 class="mb-3" style="color: #2c3e50;">Recent Orders</h4>
+                    {% if recent_orders %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Crop</th>
+                                        <th>Farmer</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Total Amount</th>
+                                        <th>Status</th>
+                                        <th>Order Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in recent_orders %}
+                                    <tr>
+                                        <td>#{{ order[0] }}</td>
+                                        <td>{{ order[11] }}</td>
+                                        <td>{{ order[12] }}</td>
+                                        <td>{{ order[4] }}</td>
+                                        <td>₹{{ order[5] }}</td>
+                                        <td>₹{{ order[6] }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'warning' if order[8] == 'pending' else 'success' if order[8] == 'confirmed' else 'info' if order[8] == 'shipped' else 'primary' if order[8] == 'delivered' else 'danger' }}">
+                                                {{ order[8].title() }}
+                                            </span>
+                                        </td>
+                                        <td>{{ order[9][:10] if order[9] else 'N/A' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No orders yet</h5>
+                            <p class="text-muted">Start browsing fresh produce from local farmers</p>
+                            <a href="{{ url_for('marketplace') }}" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart me-2"></i>Browse Marketplace
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Notifications Panel -->
+            <div class="col-md-4">
+                <div class="notif-panel p-3 h-100">
+                    <h5 class="mb-3" style="color: #2c3e50;">Notifications</h5>
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                        <div class="notif-card p-3 mb-3 rounded">
+                            <h6 class="mb-1">{{ notification[3] }}</h6>
+                            <p class="small text-muted mb-1">{{ notification[4] }}</p>
+                            <small class="text-muted">{{ notification[7][:16] if notification[7] else 'Just now' }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No new notifications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function searchCrops() {
+    window.location.href = "{{ url_for('marketplace') }}";
+}
+
+function showProfile() {
+    alert('Profile management feature coming soon!');
+}
+</script>
+{% endblock %}

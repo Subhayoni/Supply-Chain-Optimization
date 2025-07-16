@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Book Storage - Agricultural Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex h-100">
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column p-3 h-100">
+        <div class="mb-4">
+            <h3 class="text-center" style="color: #f39c12; font-weight: 700;">
+                <i class="fas fa-warehouse me-2"></i>Storage
+            </h3>
+        </div>
+        
+        <nav class="nav flex-column">
+            <a class="sidebar-link" href="{{ url_for('farmer_dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('shelter_booking') }}" style="color: #f39c12;">
+                <i class="fas fa-warehouse me-2"></i>
+                <span class="sidebar-text">Book Storage</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('view_crops') }}">
+                <i class="fas fa-eye me-2"></i>
+                <span class="sidebar-text">My Crops</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('orders') }}">
+                <i class="fas fa-shopping-cart me-2"></i>
+                <span class="sidebar-text">My Orders</span>
+            </a>
+        </nav>
+        
+        <div class="spacer"></div>
+        
+        <a class="sidebar-link" href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span class="sidebar-text">Logout</span>
+        </a>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-fill main-content p-4">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4" style="color: #2c3e50; font-weight: 700;">Book Storage Facility</h2>
+                
+                {% if not farmer_crops %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-4x text-warning mb-3"></i>
+                        <h4 class="text-muted">No crops available for storage</h4>
+                        <p class="text-muted">You need to upload crops with storage option to book shelter facilities</p>
+                        <a href="{{ url_for('upload_crop') }}" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>Upload Crop
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <!-- My Crops for Storage -->
+                        <div class="col-md-6">
+                            <h4 class="mb-3">My Crops Available for Storage</h4>
+                            {% for crop in farmer_crops %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-3">
+                                            {% if crop[8] %}
+                                                <img src="{{ url_for('static', filename='uploads/' + crop[8]) }}" 
+                                                     class="img-fluid rounded" 
+                                                     alt="{{ crop[2] }}" 
+                                                     style="height: 80px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 80px;">
+                                                    <i class="fas fa-seedling fa-2x text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-9">
+                                            <h6 class="card-title">{{ crop[2] }}</h6>
+                                            <p class="card-text">
+                                                <strong>Quantity:</strong> {{ crop[3] }} {{ crop[4] }}<br>
+                                                <strong>Quality:</strong> {{ crop[5] }}<br>
+                                                <strong>Price:</strong> ₹{{ crop[6] }}/{{ crop[4] }}
+                                            </p>
+                                            <button class="btn btn-sm btn-primary" onclick="selectCrop({{ crop[0] }}, '{{ crop[2] }}', {{ crop[3] }}, '{{ crop[4] }}')">
+                                                <i class="fas fa-check me-1"></i>Select for Storage
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Available Shelters -->
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Available Storage Facilities</h4>
+                            {% if shelters %}
+                                {% for shelter in shelters %}
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-title d-flex justify-content-between">
+                                            {{ shelter[2] }}
+                                            <span class="badge bg-success">Available</span>
+                                        </h6>
+                                        <p class="card-text">
+                                            <strong>Location:</strong> {{ shelter[3] }}<br>
+                                            <strong>Capacity:</strong> {{ shelter[4] }} quintals<br>
+                                            <strong>Occupied:</strong> {{ shelter[8] }} quintals<br>
+                                            <strong>Temperature Control:</strong> {{ shelter[5] }}<br>
+                                            <strong>Price:</strong> ₹{{ shelter[10] }}/quintal/day<br>
+                                            <strong>Owner:</strong> {{ shelter[11] }}<br>
+                                            <strong>Contact:</strong> {{ shelter[6] }}
+                                        </p>
+                                        {% if shelter[7] %}
+                                            <p class="text-muted small">{{ shelter[7] }}</p>
+                                        {% endif %}
+                                        <button class="btn btn-sm btn-warning" onclick="bookShelter({{ shelter[0] }}, '{{ shelter[2] }}', {{ shelter[10] }})">
+                                            <i class="fas fa-calendar-plus me-1"></i>Book This Shelter
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-warehouse fa-3x text-muted mb-3"></i>
+                                    <h6 class="text-muted">No storage facilities available</h6>
+                                    <p class="text-muted">Please check back later</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Book Storage Facility</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('book_shelter') }}">
+                <div class="modal-body">
+                    <input type="hidden" id="selected_crop_id" name="crop_id">
+                    <input type="hidden" id="selected_shelter_id" name="shelter_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Selected Crop</label>
+                        <p id="selected_crop_name" class="form-control-plaintext"></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Available Quantity</label>
+                        <p id="available_crop_quantity" class="form-control-plaintext"></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Selected Shelter</label>
+                        <p id="selected_shelter_name" class="form-control-plaintext"></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Storage Rate</label>
+                        <p id="storage_rate" class="form-control-plaintext"></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="storage_quantity" class="form-label">Quantity to Store</label>
+                        <input type="number" class="form-control" id="storage_quantity" name="quantity" step="0.01" min="0.01" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Estimated Total Cost</label>
+                        <p id="estimated_cost" class="form-control-plaintext fw-bold">₹0.00</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Book Storage</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedCropId = null;
+let selectedCropName = '';
+let selectedCropQuantity = 0;
+let selectedCropUnit = '';
+let selectedShelterId = null;
+let selectedShelterName = '';
+let selectedShelterRate = 0;
+
+function selectCrop(cropId, cropName, quantity, unit) {
+    selectedCropId = cropId;
+    selectedCropName = cropName;
+    selectedCropQuantity = quantity;
+    selectedCropUnit = unit;
+    
+    // Highlight selected crop
+    document.querySelectorAll('.card').forEach(card => {
+        card.classList.remove('border-primary');
+    });
+    event.target.closest('.card').classList.add('border-primary');
+    
+    // Show success message
+    const toast = document.createElement('div');
+    toast.className = 'toast show position-fixed top-0 end-0 m-3';
+    toast.innerHTML = `
+        <div class="toast-body">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            ${cropName} selected for storage
+        </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+function bookShelter(shelterId, shelterName, rate) {
+    if (!selectedCropId) {
+        alert('Please select a crop first');
+        return;
+    }
+    
+    selectedShelterId = shelterId;
+    selectedShelterName = shelterName;
+    selectedShelterRate = rate;
+    
+    // Populate modal
+    document.getElementById('selected_crop_id').value = selectedCropId;
+    document.getElementById('selected_shelter_id').value = selectedShelterId;
+    document.getElementById('selected_crop_name').textContent = selectedCropName;
+    document.getElementById('available_crop_quantity').textContent = selectedCropQuantity + ' ' + selectedCropUnit;
+    document.getElementById('selected_shelter_name').textContent = shelterName;
+    document.getElementById('storage_rate').textContent = '₹' + rate + '/quintal/day';
+    
+    // Set max quantity
+    document.getElementById('storage_quantity').max = selectedCropQuantity;
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start_date').min = today;
+    document.getElementById('end_date').min = today;
+    
+    // Calculate cost on change
+    setupCostCalculation();
+    
+    var modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+    modal.show();
+}
+
+function setupCostCalculation() {
+    const quantityInput = document.getElementById('storage_quantity');
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    const estimatedCostElement = document.getElementById('estimated_cost');
+    
+    function calculateCost() {
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        
+        if (startDate && endDate && startDate < endDate) {
+            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            const total = quantity * selectedShelterRate * days;
+            estimatedCostElement.textContent = '₹' + total.toFixed(2);
+        } else {
+            estimatedCostElement.textContent = '₹0.00';
+        }
+    }
+    
+    quantityInput.addEventListener('input', calculateCost);
+    startDateInput.addEventListener('change', calculateCost);
+    endDateInput.addEventListener('change', calculateCost);
+    
+    // Update end date minimum when start date changes
+    startDateInput.addEventListener('change', function() {
+        endDateInput.min = this.value;
+    });
+}
+</script>
+{% endblock %}

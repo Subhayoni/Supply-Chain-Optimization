@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}My Crops - Agricultural Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex h-100">
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column p-3 h-100">
+        <div class="mb-4">
+            <h3 class="text-center" style="color: #f39c12; font-weight: 700;">
+                <i class="fas fa-seedling me-2"></i>AgriPlatform
+            </h3>
+        </div>
+        
+        <nav class="nav flex-column">
+            <a class="sidebar-link" href="{{ url_for('farmer_dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('upload_crop') }}">
+                <i class="fas fa-upload me-2"></i>
+                <span class="sidebar-text">Upload Crop</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('view_crops') }}" style="color: #f39c12;">
+                <i class="fas fa-eye me-2"></i>
+                <span class="sidebar-text">My Crops</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('shelter_booking') }}">
+                <i class="fas fa-warehouse me-2"></i>
+                <span class="sidebar-text">Book Storage</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('orders') }}">
+                <i class="fas fa-shopping-cart me-2"></i>
+                <span class="sidebar-text">My Orders</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('marketplace') }}">
+                <i class="fas fa-store me-2"></i>
+                <span class="sidebar-text">Marketplace</span>
+            </a>
+        </nav>
+        
+        <div class="spacer"></div>
+        
+        <a class="sidebar-link" href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span class="sidebar-text">Logout</span>
+        </a>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-fill main-content p-4">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4" style="color: #2c3e50; font-weight: 700;">My Crop Listings</h2>
+                
+                {% if crops %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Crop Name</th>
+                                    <th>Quantity</th>
+                                    <th>Quality</th>
+                                    <th>Price per Unit</th>
+                                    <th>Listing Type</th>
+                                    <th>Status</th>
+                                    <th>Harvest Date</th>
+                                    <th>Posted On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for crop in crops %}
+                                <tr>
+                                    <td>
+                                        {% if crop[8] %}
+                                            <img src="{{ url_for('static', filename='uploads/' + crop[8]) }}" 
+                                                 alt="{{ crop[2] }}" 
+                                                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                        {% else %}
+                                            <i class="fas fa-seedling fa-2x text-muted"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ crop[2] }}</td>
+                                    <td>{{ crop[3] }} {{ crop[4] }}</td>
+                                    <td>{{ crop[5] }}</td>
+                                    <td>₹{{ crop[6] }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if crop[10] == 'sale' else 'warning' if crop[10] == 'storage' else 'info' }}">
+                                            {{ crop[10].title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if crop[11] == 'available' else 'warning' if crop[11] == 'booked' else 'danger' }}">
+                                            {{ crop[11].title() }}
+                                        </span>
+                                    </td>
+                                    <td>{{ crop[9] if crop[9] else 'N/A' }}</td>
+                                    <td>{{ crop[12][:10] if crop[12] else 'N/A' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-seedling fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No crops listed yet</h4>
+                        <p class="text-muted">Start by uploading your first crop listing</p>
+                        <a href="{{ url_for('upload_crop') }}" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>Upload Crop
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

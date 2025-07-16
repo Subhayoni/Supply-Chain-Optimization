@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Shelter Owner Dashboard - Agricultural Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shelter_dash.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex h-100">
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column p-3 h-100">
+        <div class="mb-4">
+            <h3 class="text-center" style="color: #f39c12; font-weight: 700;">
+                <i class="fas fa-warehouse me-2"></i>AgriPlatform
+            </h3>
+        </div>
+        
+        <div class="mb-4">
+            <h5 class="text-center" style="color: #2c3e50;">Welcome, {{ shelter_owner[1] }}!</h5>
+            <p class="text-center text-muted small">{{ shelter_owner[4] }}, {{ shelter_owner[3] }}</p>
+        </div>
+        
+        <nav class="nav flex-column">
+            <a class="sidebar-link" href="{{ url_for('shelter_dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('manage_bookings') }}">
+                <i class="fas fa-calendar-check me-2"></i>
+                <span class="sidebar-text">Manage Bookings</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('marketplace') }}">
+                <i class="fas fa-store me-2"></i>
+                <span class="sidebar-text">Marketplace</span>
+            </a>
+        </nav>
+        
+        <div class="spacer"></div>
+        
+        <a class="sidebar-link" href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span class="sidebar-text">Logout</span>
+        </a>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-fill main-content p-4">
+        <div class="row">
+            <!-- Quick Actions -->
+            <div class="col-md-8">
+                <h2 class="mb-4" style="color: #2c3e50; font-weight: 700;">Shelter Owner Dashboard</h2>
+                
+                <div class="action-cards">
+                    <div class="card-box" onclick="window.location.href='{{ url_for('manage_bookings') }}'">
+                        <div class="video-box">
+                            <i class="fas fa-calendar-check fa-5x text-primary" style="margin-top: 50px;"></i>
+                        </div>
+                        <div class="card-text">Manage Bookings</div>
+                    </div>
+                    
+                    <div class="card-box" onclick="window.location.href='{{ url_for('marketplace') }}'">
+                        <div class="video-box">
+                            <i class="fas fa-store fa-5x text-success" style="margin-top: 50px;"></i>
+                        </div>
+                        <div class="card-text">Browse Marketplace</div>
+                    </div>
+                    
+                    <div class="card-box" onclick="showAddShelterModal()">
+                        <div class="video-box">
+                            <i class="fas fa-plus fa-5x text-warning" style="margin-top: 50px;"></i>
+                        </div>
+                        <div class="card-text">Add New Shelter</div>
+                    </div>
+                </div>
+                
+                <!-- My Shelters -->
+                <div class="mt-5">
+                    <h4 class="mb-3" style="color: #2c3e50;">My Shelters</h4>
+                    {% if shelters %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Location</th>
+                                        <th>Capacity</th>
+                                        <th>Occupied</th>
+                                        <th>Temperature Control</th>
+                                        <th>Price/Quintal</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for shelter in shelters %}
+                                    <tr>
+                                        <td>{{ shelter[2] }}</td>
+                                        <td>{{ shelter[3] }}</td>
+                                        <td>{{ shelter[4] }}</td>
+                                        <td>{{ shelter[8] }}</td>
+                                        <td>{{ shelter[5] }}</td>
+                                        <td>₹{{ shelter[10] if shelter[10] else 'Not set' }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if shelter[9] == 'active' else 'secondary' }}">
+                                                {{ shelter[9].title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editShelter({{ shelter[0] }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-warehouse fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No shelters added yet</h5>
+                            <p class="text-muted">Add your first shelter to start receiving bookings</p>
+                            <button class="btn btn-primary" onclick="showAddShelterModal()">
+                                <i class="fas fa-plus me-2"></i>Add Shelter
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Recent Bookings -->
+                <div class="mt-5">
+                    <h4 class="mb-3" style="color: #2c3e50;">Recent Bookings</h4>
+                    {% if recent_bookings %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Farmer</th>
+                                        <th>Crop</th>
+                                        <th>Quantity</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Total Cost</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in recent_bookings %}
+                                    <tr>
+                                        <td>{{ booking[12] }}</td>
+                                        <td>{{ booking[11] }}</td>
+                                        <td>{{ booking[4] }}</td>
+                                        <td>{{ booking[5] }}</td>
+                                        <td>{{ booking[6] }}</td>
+                                        <td>₹{{ booking[7] }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'warning' if booking[8] == 'pending' else 'success' if booking[8] == 'confirmed' else 'info' }}">
+                                                {{ booking[8].title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('manage_bookings') }}" class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent bookings</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Notifications Panel -->
+            <div class="col-md-4">
+                <div class="notif-panel p-3 h-100">
+                    <h5 class="mb-3" style="color: #2c3e50;">Notifications</h5>
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                        <div class="notif-card p-3 mb-3 rounded">
+                            <h6 class="mb-1">{{ notification[3] }}</h6>
+                            <p class="small text-muted mb-1">{{ notification[4] }}</p>
+                            <small class="text-muted">{{ notification[7][:16] if notification[7] else 'Just now' }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No new notifications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Shelter Modal -->
+<div class="modal fade" id="addShelterModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Shelter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_shelter') }}" id="addShelterForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="shelter_name" class="form-label">Shelter Name</label>
+                        <input type="text" class="form-control" id="shelter_name" name="shelter_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="capacity" class="form-label">Capacity (Quintals)</label>
+                        <input type="number" class="form-control" id="capacity" name="capacity" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="temperature_control" class="form-label">Temperature Control</label>
+                        <select class="form-select" id="temperature_control" name="temperature_control" required>
+                            <option value="">Select Type</option>
+                            <option value="Ambient">Ambient</option>
+                            <option value="Controlled">Controlled</option>
+                            <option value="Refrigerated">Refrigerated</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price_per_quintal" class="form-label">Price per Quintal (₹)</label>
+                        <input type="number" class="form-control" id="price_per_quintal" name="price_per_quintal" step="0.01" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact" class="form-label">Contact Information</label>
+                        <input type="text" class="form-control" id="contact" name="contact" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="details" class="form-label">Additional Details</label>
+                        <textarea class="form-control" id="details" name="details" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Shelter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showAddShelterModal() {
+    var modal = new bootstrap.Modal(document.getElementById('addShelterModal'));
+    modal.show();
+}
+
+function editShelter(shelterId) {
+    // Implementation for editing shelter
+    alert('Edit functionality to be implemented');
+}
+</script>
+{% endblock %}

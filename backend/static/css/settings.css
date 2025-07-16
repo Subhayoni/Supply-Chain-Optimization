@@ -1,0 +1,199 @@
+body {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.settings-card {
+  width: 100%;
+  max-width: 480px;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 193, 7, 0.2);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  padding: 2rem;
+}
+
+.settings-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.settings-title {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.dark-mode {
+  background-color: #121212 !important;
+  color: #e0e0e0;
+}
+
+.dark-card {
+  background-color: #1f1f1f !important;
+  border-color: #333 !important;
+  color: #e0e0e0;
+}
+
+.dark-mode .form-select,
+.dark-mode .form-check-label {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border-color: #333;
+}
+
+.dark-mode .form-control {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border-color: #333;
+}
+
+.dark-mode .form-control:focus {
+  background-color: #2d2d2d;
+  border-color: #ffc107;
+  color: #e0e0e0;
+}
+
+/* Font Sizes */
+.font-small {
+  font-size: 14px;
+}
+
+.font-medium {
+  font-size: 16px;
+}
+
+.font-large {
+  font-size: 18px;
+}
+
+/* Language Settings */
+.language-selector {
+  margin-bottom: 1.5rem;
+}
+
+.language-selector select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  background-color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.language-selector select:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+/* Accessibility Settings */
+.accessibility-settings {
+  margin-bottom: 1.5rem;
+}
+
+.form-check {
+  margin-bottom: 1rem;
+}
+
+.form-check-input {
+  border-color: rgba(255, 193, 7, 0.3);
+}
+
+.form-check-input:checked {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+
+.form-check-label {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+/* Notification Settings */
+.notification-settings {
+  margin-bottom: 1.5rem;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+/* Profile Settings */
+.profile-settings {
+  margin-bottom: 1.5rem;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(255, 193, 7, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 2rem;
+  color: #f39c12;
+}
+
+.profile-info {
+  text-align: center;
+}
+
+.profile-info h5 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.profile-info p {
+  color: #7f8c8d;
+  margin-bottom: 0.25rem;
+}
+
+/* Save Button */
+.save-settings-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #f39c12;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.save-settings-btn:hover {
+  background-color: #e67e22;
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settings-card {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .settings-title {
+    font-size: 1.25rem;
+  }
+  
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+}

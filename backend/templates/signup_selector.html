@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Agricultural Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+    .signup-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(12px);
+    }
+    
+    .signup-card {
+        background-color: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+    }
+    
+    .signup-title {
+        color: #2c3e50;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .role-card {
+        background-color: rgba(255, 255, 255, 0.6);
+        border: 2px solid rgba(255, 193, 7, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        margin-bottom: 1rem;
+    }
+    
+    .role-card:hover {
+        border-color: #ffc107;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .role-icon {
+        font-size: 2.5rem;
+        color: #f39c12;
+        margin-bottom: 1rem;
+    }
+    
+    .role-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    
+    .role-description {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+    
+    .back-link {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .back-link a {
+        color: #f39c12;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .back-link a:hover {
+        color: #e67e22;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <div class="signup-card">
+        <h2 class="signup-title">
+            <i class="fas fa-user-plus me-2"></i>Choose Your Role
+        </h2>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <a href="{{ url_for('signup_farmer') }}" class="text-decoration-none">
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="role-title">Farmer</div>
+                        <div class="role-description">Upload crops for storage or sale</div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6">
+                <a href="{{ url_for('signup_shelter') }}" class="text-decoration-none">
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-warehouse"></i>
+                        </div>
+                        <div class="role-title">Shelter Owner</div>
+                        <div class="role-description">Provide storage facilities</div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6">
+                <a href="{{ url_for('signup_shopkeeper') }}" class="text-decoration-none">
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="role-title">Shopkeeper</div>
+                        <div class="role-description">Buy crops for retail</div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6">
+                <a href="{{ url_for('signup_customer') }}" class="text-decoration-none">
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="role-title">Customer</div>
+                        <div class="role-description">Buy fresh produce directly</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="back-link">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+            <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Bookings - Agricultural Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex h-100">
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column p-3 h-100">
+        <div class="mb-4">
+            <h3 class="text-center" style="color: #f39c12; font-weight: 700;">
+                <i class="fas fa-calendar-check me-2"></i>Bookings
+            </h3>
+        </div>
+        
+        <nav class="nav flex-column">
+            <a class="sidebar-link" href="{{ url_for('shelter_dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('manage_bookings') }}" style="color: #f39c12;">
+                <i class="fas fa-calendar-check me-2"></i>
+                <span class="sidebar-text">Manage Bookings</span>
+            </a>
+            <a class="sidebar-link" href="{{ url_for('marketplace') }}">
+                <i class="fas fa-store me-2"></i>
+                <span class="sidebar-text">Marketplace</span>
+            </a>
+        </nav>
+        
+        <div class="spacer"></div>
+        
+        <a class="sidebar-link" href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span class="sidebar-text">Logout</span>
+        </a>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-fill main-content p-4">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4" style="color: #2c3e50; font-weight: 700;">Manage Storage Bookings</h2>
+                
+                {% if bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Farmer</th>
+                                    <th>Contact</th>
+                                    <th>Crop</th>
+                                    <th>Shelter</th>
+                                    <th>Quantity</th>
+                                    <th>Duration</th>
+                                    <th>Total Cost</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td>#{{ booking[0] }}</td>
+                                    <td>{{ booking[11] }}</td>
+                                    <td>{{ booking[12] }}</td>
+                                    <td>{{ booking[10] }}</td>
+                                    <td>{{ booking[13] }}</td>
+                                    <td>{{ booking[4] }}</td>
+                                    <td>{{ booking[5] }} to {{ booking[6] }}</td>
+                                    <td>₹{{ booking[7] }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'warning' if booking[8] == 'pending' else 'success' if booking[8] == 'confirmed' else 'info' if booking[8] == 'active' else 'primary' if booking[8] == 'completed' else 'danger' }}">
+                                            {{ booking[8].title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            {% if booking[8] == 'pending' %}
+                                                <button class="btn btn-sm btn-success" onclick="updateBookingStatus({{ booking[0] }}, 'confirmed')">
+                                                    <i class="fas fa-check"></i> Confirm
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="updateBookingStatus({{ booking[0] }}, 'cancelled')">
+                                                    <i class="fas fa-times"></i> Cancel
+                                                </button>
+                                            {% elif booking[8] == 'confirmed' %}
+                                                <button class="btn btn-sm btn-info" onclick="updateBookingStatus({{ booking[0] }}, 'active')">
+                                                    <i class="fas fa-play"></i> Start
+                                                </button>
+                                            {% elif booking[8] == 'active' %}
+                                                <button class="btn btn-sm btn-primary" onclick="updateBookingStatus({{ booking[0] }}, 'completed')">
+                                                    <i class="fas fa-check-circle"></i> Complete
+                                                </button>
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-outline-info" onclick="viewBookingDetails({{ booking[0] }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No bookings yet</h4>
+                        <p class="text-muted">Storage booking requests will appear here</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal fade" id="bookingDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Booking Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="booking-details-content">
+                    <!-- Booking details will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateBookingStatus(bookingId, status) {
+    if (confirm('Are you sure you want to update this booking status to ' + status + '?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("update_booking_status") }}';
+        
+        const bookingIdInput = document.createElement('input');
+        bookingIdInput.type = 'hidden';
+        bookingIdInput.name = 'booking_id';
+        bookingIdInput.value = bookingId;
+        
+        const statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'status';
+        statusInput.value = status;
+        
+        form.appendChild(bookingIdInput);
+        form.appendChild(statusInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function viewBookingDetails(bookingId) {
+    // Find the booking row
+    const rows = document.querySelectorAll('tbody tr');
+    let bookingRow = null;
+    
+    rows.forEach(row => {
+        if (row.cells[0].textContent === '#' + bookingId) {
+            bookingRow = row;
+        }
+    });
+    
+    if (bookingRow) {
+        const details = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Booking Information</h6>
+                    <p><strong>Booking ID:</strong> ${bookingRow.cells[0].textContent}</p>
+                    <p><strong>Farmer:</strong> ${bookingRow.cells[1].textContent}</p>
+                    <p><strong>Contact:</strong> ${bookingRow.cells[2].textContent}</p>
+                    <p><strong>Crop:</strong> ${bookingRow.cells[3].textContent}</p>
+                    <p><strong>Shelter:</strong> ${bookingRow.cells[4].textContent}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Storage Details</h6>
+                    <p><strong>Quantity:</strong> ${bookingRow.cells[5].textContent}</p>
+                    <p><strong>Duration:</strong> ${bookingRow.cells[6].textContent}</p>
+                    <p><strong>Total Cost:</strong> ${bookingRow.cells[7].textContent}</p>
+                    <p><strong>Status:</strong> ${bookingRow.cells[8].textContent}</p>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('booking-details-content').innerHTML = details;
+        
+        var modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+        modal.show();
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Marketplace - Agricultural Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex h-100">
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column p-3 h-100">
+        <div class="mb-4">
+            <h3 class="text-center" style="color: #f39c12; font-weight: 700;">
+                <i class="fas fa-store me-2"></i>Marketplace
+            </h3>
+        </div>
+        
+        <nav class="nav flex-column">
+            {% if session.role == 'Farmer' %}
+                <a class="sidebar-link" href="{{ url_for('farmer_dashboard') }}">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+            {% elif session.role == 'Shelter Owner' %}
+                <a class="sidebar-link" href="{{ url_for('shelter_dashboard') }}">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+            {% elif session.role == 'Shopkeeper' %}
+                <a class="sidebar-link" href="{{ url_for('shopkeeper_dashboard') }}">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+            {% elif session.role == 'Customer' %}
+                <a class="sidebar-link" href="{{ url_for('customer_dashboard') }}">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+            {% endif %}
+            
+            <a class="sidebar-link" href="{{ url_for('marketplace') }}" style="color: #f39c12;">
+                <i class="fas fa-store me-2"></i>
+                <span class="sidebar-text">Marketplace</span>
+            </a>
+            
+            {% if session.role in ['Shopkeeper', 'Customer'] %}
+                <a class="sidebar-link" href="{{ url_for('orders') }}">
+                    <i class="fas fa-clipboard-list me-2"></i>
+                    <span class="sidebar-text">My Orders</span>
+                </a>
+            {% endif %}
+        </nav>
+        
+        <div class="spacer"></div>
+        
+        <a class="sidebar-link" href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span class="sidebar-text">Logout</span>
+        </a>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-fill main-content p-4">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4" style="color: #2c3e50; font-weight: 700;">Marketplace</h2>
+                
+                <!-- Search and Filter -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <form method="GET" action="{{ url_for('marketplace') }}" class="d-flex">
+                            <input type="text" class="form-control me-2" name="search" placeholder="Search crops..." value="{{ search }}">
+                            <select class="form-select me-2" name="crop_filter" style="max-width: 200px;">
+                                <option value="">All Crops</option>
+                                {% for crop in crop_options %}
+                                    <option value="{{ crop }}" {% if crop == crop_filter %}selected{% endif %}>{{ crop }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="text-muted">{{ crops|length }} crops found</span>
+                    </div>
+                </div>
+                
+                <!-- Crop Listings -->
+                {% if crops %}
+                    <div class="row">
+                        {% for crop in crops %}
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">{{ crop[2] }}</h5>
+                                    <span class="badge bg-{{ 'primary' if crop[10] == 'sale' else 'info' }}">{{ crop[10].title() }}</span>
+                                </div>
+                                
+                                {% if crop[8] %}
+                                    <img src="{{ url_for('static', filename='uploads/' + crop[8]) }}" 
+                                         class="card-img-top" 
+                                         alt="{{ crop[2] }}" 
+                                         style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                                        <i class="fas fa-seedling fa-4x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-6">
+                                            <small class="text-muted">Quantity</small>
+                                            <p class="mb-0"><strong>{{ crop[3] }} {{ crop[4] }}</strong></p>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Quality</small>
+                                            <p class="mb-0"><strong>{{ crop[5] }}</strong></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-2">
+                                        <div class="col-6">
+                                            <small class="text-muted">Price</small>
+                                            <p class="mb-0"><strong>₹{{ crop[6] }}/{{ crop[4] }}</strong></p>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Farmer</small>
+                                            <p class="mb-0"><strong>{{ crop[13] }}</strong></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <small class="text-muted">Location</small>
+                                            <p class="mb-0"><strong>{{ crop[15] }}, {{ crop[14] }}</strong></p>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if crop[7] %}
+                                        <p class="text-muted small">{{ crop[7][:100] }}{% if crop[7]|length > 100 %}...{% endif %}</p>
+                                    {% endif %}
+                                    
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <small class="text-muted">Harvest Date</small>
+                                            <p class="mb-0">{{ crop[9] if crop[9] else 'N/A' }}</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Posted</small>
+                                            <p class="mb-0">{{ crop[12][:10] if crop[12] else 'N/A' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {% if session.role in ['Shopkeeper', 'Customer'] %}
+                                <div class="card-footer">
+                                    <button class="btn btn-primary w-100" onclick="showOrderModal({{ crop[0] }}, '{{ crop[2] }}', {{ crop[6] }}, '{{ crop[4] }}', {{ crop[3] }})">
+                                        <i class="fas fa-shopping-cart me-2"></i>Order Now
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No crops found</h4>
+                        <p class="text-muted">Try adjusting your search criteria</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Modal -->
+{% if session.role in ['Shopkeeper', 'Customer'] %}
+<div class="modal fade" id="orderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Place Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('place_order') }}">
+                <div class="modal-body">
+                    <input type="hidden" id="crop_id" name="crop_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Crop</label>
+                        <p id="crop_name" class="form-control-plaintext"></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Price per Unit</label>
+                        <p id="crop_price" class="form-control-plaintext"></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Available Quantity</label>
+                        <p id="available_quantity" class="form-control-plaintext"></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="order_quantity" class="form-label">Quantity to Order</label>
+                        <input type="number" class="form-control" id="order_quantity" name="quantity" step="0.01" min="0.01" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="delivery_address" class="form-label">Delivery Address</label>
+                        <textarea class="form-control" id="delivery_address" name="delivery_address" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Total Amount</label>
+                        <p id="total_amount" class="form-control-plaintext fw-bold">₹0.00</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Place Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showOrderModal(cropId, cropName, price, unit, availableQty) {
+    document.getElementById('crop_id').value = cropId;
+    document.getElementById('crop_name').textContent = cropName;
+    document.getElementById('crop_price').textContent = '₹' + price + '/' + unit;
+    document.getElementById('available_quantity').textContent = availableQty + ' ' + unit;
+    
+    // Calculate total when quantity changes
+    const quantityInput = document.getElementById('order_quantity');
+    const totalAmountElement = document.getElementById('total_amount');
+    
+    quantityInput.addEventListener('input', function() {
+        const quantity = parseFloat(this.value) || 0;
+        const total = quantity * price;
+        totalAmountElement.textContent = '₹' + total.toFixed(2);
+    });
+    
+    // Set max quantity
+    quantityInput.max = availableQty;
+    
+    var modal = new bootstrap.Modal(document.getElementById('orderModal'));
+    modal.show();
+}
+</script>
+{% endif %}
+{% endblock %}

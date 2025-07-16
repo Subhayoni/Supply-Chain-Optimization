@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Requests Sent - Krishi Mitra</title>
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      background-color: #f9f5e8;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(10px);
+      border-right: 2px solid #ffc107;
+    }
+
+    .sidebar-link {
+      color: #222;
+      text-decoration: none;
+      font-size: 1.05rem;
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar-link:hover {
+      color: #ffc107;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background-color: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+    }
+
+    .request-card {
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      height: 100%;
+    }
+
+    .badge {
+      font-size: 0.8rem;
+    }
+
+    .btn-sm {
+      font-size: 0.85rem;
+    }
+
+    .nav-tabs .nav-link.active {
+      background-color: #ffc107;
+      color: #000;
+      border-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid h-100 d-flex p-3 gap-3">
+
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column align-items-start p-3 rounded-4 shadow-sm">
+      <h4 class="logo mb-4 text-primary">Krishi Mitra</h4>
+      <a href="browse_crops.html" class="sidebar-link"><i class="bi bi-search me-2"></i>Browse Crops</a>
+      <a href="my_orders.html" class="sidebar-link"><i class="bi bi-box-seam me-2"></i>My Orders</a>
+      <a href="saved_sellers.html" class="sidebar-link"><i class="bi bi-person-heart me-2"></i>Saved Sellers</a>
+      <a href="requests_sent.html" class="sidebar-link"><i class="bi bi-send-check me-2"></i>Requests Sent</a>
+      <a href="settings.html" class="sidebar-link"><i class="bi bi-gear-fill me-2"></i>Settings</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content w-100">
+      <h3 class="fw-semibold mb-4">Requests Sent</h3>
+
+      <!-- Tabs -->
+      <ul class="nav nav-tabs mb-4" id="requestTabs" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#all">All</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#farmers">To Farmers</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#shelters">To Shelters</button></li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- All Tab -->
+        <div class="tab-pane fade show active" id="all">
+          <div class="row">
+            <!-- Request 1 -->
+            <div class="col-md-6">
+              <div class="request-card" data-message="I'd like to purchase 100kg of rice before July 15. Please confirm availability.">
+                <h5 class="fw-bold">Farmer Ramesh</h5>
+                <p>📍 Kolkata | 📅 Sent: July 1 | Expected Delivery: July 15</p>
+                <p>🌾 Crop: Rice | Quantity: 100 kg | ₹2000 total</p>
+                <p>📞 Contact: +91 9876543210</p>
+                <span class="badge bg-warning text-dark mb-2">Pending</span>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#messageModal" onclick="showMessage(this)">View Message</button>
+                  <button class="btn btn-outline-danger btn-sm" onclick="cancelRequest(this)">Cancel Request</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Request 2 -->
+            <div class="col-md-6">
+              <div class="request-card" data-message="I want to store 50kg of vegetables from July 10 to July 25. Please reserve space.">
+                <h5 class="fw-bold">Shelter AgroCool</h5>
+                <p>📍 Howrah | 📅 Sent: July 2 | Storage Period: July 10–25</p>
+                <p>🥬 Crop: Vegetables | Quantity: 50 kg | ₹300 storage</p>
+                <p>📞 Contact: +91 9123456780</p>
+                <span class="badge bg-success">Accepted</span>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#messageModal" onclick="showMessage(this)">View Message</button>
+                  <button class="btn btn-outline-danger btn-sm" onclick="cancelRequest(this)">Cancel Request</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Farmers Tab -->
+        <div class="tab-pane fade" id="farmers">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="request-card" data-message="I'd like to purchase 100kg of rice before July 15. Please confirm availability.">
+                <h5 class="fw-bold">Farmer Ramesh</h5>
+                <p>📍 Kolkata | 📅 Sent: July 1 | Expected Delivery: July 15</p>
+                <p>🌾 Crop: Rice | Quantity: 100 kg | ₹2000 total</p>
+                <p>📞 Contact: +91 9876543210</p>
+                <span class="badge bg-warning text-dark mb-2">Pending</span>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#messageModal" onclick="showMessage(this)">View Message</button>
+                  <button class="btn btn-outline-danger btn-sm" onclick="cancelRequest(this)">Cancel Request</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shelters Tab -->
+        <div class="tab-pane fade" id="shelters">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="request-card" data-message="I want to store 50kg of vegetables from July 10 to July 25. Please reserve space.">
+                <h5 class="fw-bold">Shelter AgroCool</h5>
+                <p>📍 Howrah | 📅 Sent: July 2 | Storage Period: July 10–25</p>
+                <p>🥬 Crop: Vegetables | Quantity: 50 kg | ₹300 storage</p>
+                <p>📞 Contact: +91 9123456780</p>
+                <span class="badge bg-success">Accepted</span>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#messageModal" onclick="showMessage(this)">View Message</button>
+                  <button class="btn btn-outline-danger btn-sm" onclick="cancelRequest(this)">Cancel Request</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Modal -->
+  <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4">
+        <div class="modal-header">
+          <h5 class="modal-title" id="messageModalLabel">Your Message</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="sentMessageText" class="mb-0"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function cancelRequest(btn) {
+      if (confirm("Are you sure you want to cancel this request?")) {
+        const card = btn.closest('.request-card');
+        card.remove();
+      }
+    }
+
+    function showMessage(btn) {
+      const card = btn.closest('.request-card');
+      const message = card.getAttribute('data-message') || "No message found.";
+      document.getElementById("sentMessageText").innerText = message;
+    }
+  </script>
+</body>
+</html>
