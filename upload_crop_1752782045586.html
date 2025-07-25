@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Crop - Agricultural Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+    .upload-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(12px);
+        padding: 2rem 0;
+    }
+    
+    .upload-card {
+        background-color: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+    }
+    
+    .upload-title {
+        color: #2c3e50;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .form-control, .form-select {
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 1rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+    
+    .btn-upload {
+        background-color: #f39c12;
+        border-color: #f39c12;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-upload:hover {
+        background-color: #e67e22;
+        border-color: #e67e22;
+        transform: translateY(-2px);
+    }
+    
+    .back-link {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+    
+    .back-link a {
+        color: #f39c12;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .back-link a:hover {
+        color: #e67e22;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="upload-card">
+        <h2 class="upload-title">
+            <i class="fas fa-upload me-2"></i>Upload Crop Details
+        </h2>
+        
+        <form method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="crop_name" class="form-label">Crop Name</label>
+                        <input type="text" class="form-control" id="crop_name" name="crop_name" required>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" step="0.01" min="0" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="unit" class="form-label">Unit</label>
+                        <select class="form-select" id="unit" name="unit" required>
+                            <option value="">Select Unit</option>
+                            <option value="kg">Kilograms (kg)</option>
+                            <option value="quintal">Quintals</option>
+                            <option value="ton">Tons</option>
+                            <option value="bag">Bags</option>
+                            <option value="piece">Pieces</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="quality" class="form-label">Quality Grade</label>
+                        <select class="form-select" id="quality" name="quality" required>
+                            <option value="">Select Quality</option>
+                            <option value="Grade A">Grade A (Premium)</option>
+                            <option value="Grade B">Grade B (Good)</option>
+                            <option value="Grade C">Grade C (Standard)</option>
+                            <option value="Organic">Organic</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="price_per_unit" class="form-label">Price per Unit (₹)</label>
+                        <input type="number" class="form-control" id="price_per_unit" name="price_per_unit" step="0.01" min="0" required>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="harvest_date" class="form-label">Harvest Date</label>
+                        <input type="date" class="form-control" id="harvest_date" name="harvest_date">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="listing_type" class="form-label">Listing Type</label>
+                <select class="form-select" id="listing_type" name="listing_type" required>
+                    <option value="">Select Type</option>
+                    <option value="storage">Storage Only</option>
+                    <option value="sale">Sale Only</option>
+                    <option value="both">Both Storage & Sale</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="image" class="form-label">Crop Image</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                <div class="form-text">Upload an image of your crop (optional)</div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Additional details about your crop..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-upload">
+                <i class="fas fa-upload me-2"></i>Upload Crop
+            </button>
+        </form>
+        
+        <div class="back-link">
+            <p><a href="{{ url_for('farmer_dashboard') }}">Back to Dashboard</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

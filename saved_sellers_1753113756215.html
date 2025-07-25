@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saved Sellers - Krishi Mitra</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      background-color: #f9f5e8;
+    }
+
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+      background-color: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(10px);
+      border-right: 2px solid #ffc107;
+    }
+
+    .sidebar-link {
+      color: #222;
+      text-decoration: none;
+      font-size: 1.05rem;
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar-link:hover {
+      color: #ffc107;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background-color: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+    }
+
+    .seller-card {
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      height: 100%;
+    }
+
+    .actions i {
+      cursor: pointer;
+      font-size: 1.2rem;
+      margin-left: 12px;
+    }
+
+    .actions i:hover {
+      opacity: 0.8;
+    }
+
+    .bi-trash {
+      color: #dc3545;
+    }
+
+    .bi-chat-dots {
+      color: #ffc107;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid h-100 d-flex p-3 gap-3">
+
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column align-items-start p-3 rounded-4 shadow-sm">
+      <h4 class="logo mb-4 text-primary"><span class="sidebar-text">Krishi Mitra</span></h4>
+      <a href="browse_crops.html" class="sidebar-link">
+        <i class="bi bi-search me-2"></i> <span class="sidebar-text">Browse Crops</span>
+      </a>
+      <a href="my_orders.html" class="sidebar-link">
+        <i class="bi bi-box-seam me-2"></i> <span class="sidebar-text">My Orders</span>
+      </a>
+      <a href="saved_sellers.html" class="sidebar-link">
+        <i class="bi bi-person-heart me-2"></i> <span class="sidebar-text">Saved Sellers</span>
+      </a>
+      <a href="requests_sent.html" class="sidebar-link">
+        <i class="bi bi-send-check me-2"></i> <span class="sidebar-text">Requests Sent</span>
+      </a>
+      <a href="settings.html" class="sidebar-link">
+        <i class="bi bi-gear-fill me-2"></i> <span class="sidebar-text">Settings</span>
+      </a>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content w-100">
+      <h3 class="fw-semibold mb-4">Saved Sellers</h3>
+
+      <div class="row">
+        <!-- Seller Card 1 -->
+        <div class="col-md-6 seller-wrapper">
+          <div class="seller-card d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="fw-bold">Farmer Ramesh</h5>
+              <p class="mb-1">Location: Kolkata, WB</p>
+              <p class="mb-1">Crops: Rice, Wheat, Vegetables</p>
+              <p class="mb-1">Rating: ⭐⭐⭐⭐☆ (4.2)</p>
+              <p class="mb-1">Orders Placed: 5 times</p>
+            </div>
+            <div class="actions">
+              <i class="bi bi-chat-dots" title="Message" data-bs-toggle="modal" data-bs-target="#messageModal"></i>
+              <i class="bi bi-trash" title="Remove"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seller Card 2 -->
+        <div class="col-md-6 seller-wrapper">
+          <div class="seller-card d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="fw-bold">Farmer Sunita</h5>
+              <p class="mb-1">Location: Howrah, WB</p>
+              <p class="mb-1">Crops: Pulses, Fruits</p>
+              <p class="mb-1">Rating: ⭐⭐⭐⭐⭐ (4.8)</p>
+              <p class="mb-1">Orders Placed: 3 times</p>
+            </div>
+            <div class="actions">
+              <i class="bi bi-chat-dots" title="Message" data-bs-toggle="modal" data-bs-target="#messageModal"></i>
+              <i class="bi bi-trash" title="Remove"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Message Modal -->
+  <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4">
+        <div class="modal-header">
+          <h5 class="modal-title" id="messageModalLabel">Send Message</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <textarea class="form-control" rows="5" placeholder="Type your message here..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Delete Function JS -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const deleteIcons = document.querySelectorAll(".bi-trash");
+
+      deleteIcons.forEach(icon => {
+        icon.addEventListener("click", function () {
+          const confirmed = confirm("Are you sure you want to remove this seller?");
+          if (confirmed) {
+            const wrapper = icon.closest(".seller-wrapper");
+            if (wrapper) {
+              wrapper.remove();
+            }
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
